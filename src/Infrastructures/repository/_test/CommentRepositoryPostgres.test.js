@@ -41,7 +41,7 @@ describe('CommentRepositoryPostgres', () => {
         id: commentId,
         thread: threadId,
         owner: userId,
-        deletedAt: new Date().toISOString(), // comment is soft deleted
+        isDelete: true, // comment is soft deleted
       });
 
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
@@ -205,7 +205,7 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('deleteCommentById function', () => {
-    it('should soft delete comment and update deleted_at field', async () => {
+    it('should soft delete comment and update is_delete field', async () => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123' });
       await ThreadsTableTestHelper.addThread({
@@ -228,7 +228,7 @@ describe('CommentRepositoryPostgres', () => {
       // Assert
       const comments = await CommentsTableTestHelper.findCommentsById(commentId);
       expect(comments).toHaveLength(1);
-      expect(comments[0].deleted_at).toBeTruthy();
+      expect(comments[0].is_delete).toBeTruthy();
     });
   });
 });

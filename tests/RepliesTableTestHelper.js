@@ -8,11 +8,11 @@ const RepliesTableTestHelper = {
     date = new Date().toISOString(),
     comment = 'comment-123',
     owner = 'user-123',
-    deletedAt = null,
+    isDelete = false,
   }) {
     const query = {
       text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5, $6)',
-      values: [id, content, date, comment, owner, deletedAt],
+      values: [id, content, date, comment, owner, isDelete],
     };
 
     await pool.query(query);

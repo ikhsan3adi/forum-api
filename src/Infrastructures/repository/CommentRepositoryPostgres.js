@@ -12,7 +12,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async checkCommentAvailability(id) {
     const query = {
-      text: 'SELECT id, deleted_at FROM comments WHERE id = $1',
+      text: 'SELECT id, is_delete FROM comments WHERE id = $1',
       values: [id],
     };
 
@@ -22,7 +22,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       throw new NotFoundError('komentar tidak ditemukan');
     }
 
-    if (result.rows[0].deleted_at) {
+    if (result.rows[0].is_delete) {
       throw new NotFoundError('komentar tidak valid');
     }
   }
@@ -58,7 +58,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT comments.id, users.username, comments.date, comments.content, comments.deleted_at FROM comments LEFT JOIN users ON users.id = comments.owner WHERE comments.thread = $1 ORDER BY comments.date ASC',
+      text: 'SELECT comments.id, users.username, comments.date, comments.content, comments.is_delete FROM comments LEFT JOIN users ON users.id = comments.owner WHERE comments.thread = $1 ORDER BY comments.date ASC',
       values: [threadId],
     };
 
@@ -68,11 +68,9 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async deleteCommentById(id) {
-    const date = new Date().toISOString();
-
     const query = {
-      text: 'UPDATE comments SET deleted_at = $1 WHERE id = $2',
-      values: [date, id],
+      text: 'UPDATE comments SET is_delete = true WHERE id = $1',
+      values: [id],
     };
 
     await this._pool.query(query);

@@ -49,7 +49,7 @@ describe('ReplyRepositoryPostgres', () => {
         id: replyId,
         comment: commentId,
         owner: userId,
-        deletedAt: new Date().toISOString(), // reply is soft deleted
+        isDelete: true, // reply is soft deleted
       });
 
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
@@ -252,7 +252,7 @@ describe('ReplyRepositoryPostgres', () => {
   });
 
   describe('deleteReplyById function', () => {
-    it('should soft delete reply and update deleted_at field', async () => {
+    it('should soft delete reply and update is_delete field', async () => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123' });
       await ThreadsTableTestHelper.addThread({
@@ -280,7 +280,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Assert
       const replies = await RepliesTableTestHelper.findRepliesById(replyId);
       expect(replies).toHaveLength(1);
-      expect(replies[0].deleted_at).toBeTruthy();
+      expect(replies[0].is_delete).toBeTruthy();
     });
   });
 });

@@ -12,7 +12,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async checkReplyAvailability(id) {
     const query = {
-      text: 'SELECT id, deleted_at FROM replies WHERE id = $1',
+      text: 'SELECT id, is_delete FROM replies WHERE id = $1',
       values: [id],
     };
 
@@ -22,7 +22,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       throw new NotFoundError('balasan tidak ditemukan');
     }
 
-    if (result.rows[0].deleted_at) {
+    if (result.rows[0].is_delete) {
       throw new NotFoundError('balasan tidak valid');
     }
   }
@@ -58,7 +58,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async getRepliesByCommentId(commentId) {
     const query = {
-      text: 'SELECT replies.id, users.username, replies.date, replies.content, replies.deleted_at FROM replies LEFT JOIN users ON users.id = replies.owner WHERE replies.comment = $1 ORDER BY replies.date ASC',
+      text: 'SELECT replies.id, users.username, replies.date, replies.content, replies.is_delete FROM replies LEFT JOIN users ON users.id = replies.owner WHERE replies.comment = $1 ORDER BY replies.date ASC',
       values: [commentId],
     };
 
@@ -68,11 +68,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
   }
 
   async deleteReplyById(id) {
-    const date = new Date().toISOString();
-
     const query = {
-      text: 'UPDATE replies SET deleted_at = $1 WHERE id = $2',
-      values: [date, id],
+      text: 'UPDATE replies SET is_delete = true WHERE id = $1',
+      values: [id],
     };
 
     await this._pool.query(query);

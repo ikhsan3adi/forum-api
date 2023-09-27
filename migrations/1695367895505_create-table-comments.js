@@ -23,9 +23,10 @@ exports.up = (pgm) => {
       notNull: true,
       references: 'users',
     },
-    deleted_at: {
-      type: 'TIMESTAMP',
+    is_delete: {
+      type: 'boolean',
       notNull: false,
+      default: false,
     },
   });
 };
