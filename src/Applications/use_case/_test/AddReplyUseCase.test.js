@@ -8,7 +8,6 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 describe('AddReplyUseCase', () => {
   it('should orchestrating the add reply action correctly', async () => {
     // Arrange
-    const userId = 'user-123';
     const useCaseParams = {
       threadId: 'thread-123',
       commentId: 'comment-123',
@@ -42,19 +41,19 @@ describe('AddReplyUseCase', () => {
     });
 
     // Action
-    const addedReply = await addReplyUseCase.execute(userId, useCaseParams, useCasePayload);
+    const addedReply = await addReplyUseCase.execute('user-123', useCaseParams, useCasePayload);
 
     // Assert
     expect(addedReply).toStrictEqual(new AddedReply({
       id: 'reply-123',
-      content: useCasePayload.content,
+      content: 'A reply',
       owner: 'user-123',
     }));
 
     expect(mockThreadRepository.checkThreadAvailability).toBeCalledWith(useCaseParams.threadId);
     expect(mockCommentRepository.checkCommentAvailability).toBeCalledWith(useCaseParams.commentId);
     expect(mockReplyRepository.addReply).toBeCalledWith(
-      userId,
+      'user-123',
       useCaseParams.commentId,
       new NewReply({ content: useCasePayload.content }),
     );
