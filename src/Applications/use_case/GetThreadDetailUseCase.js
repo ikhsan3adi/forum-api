@@ -18,20 +18,13 @@ class GetThreadDetailUseCase {
     const threadComments = await this._commentRepository.getCommentsByThreadId(threadId);
 
     threadDetail.comments = await Promise.all(threadComments.map(async (comment) => {
-      let replies = [];
-
-      if (!comment.is_delete) {
-        const commentReplies = await this._replyRepository.getRepliesByCommentId(comment.id);
-        replies = commentReplies.map((reply) => new ReplyDetail({
-          ...reply,
-          content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
-        }));
-      }
+      const replies = comment.is_delete
+        ? []
+        : await this._replyRepository.getRepliesByCommentId(comment.id);
 
       return new CommentDetail({
         ...comment,
-        replies,
-        content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
+        replies: replies.map((reply) => new ReplyDetail(reply)),
       });
     }));
 

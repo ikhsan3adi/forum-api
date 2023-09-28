@@ -1,12 +1,17 @@
+/* eslint-disable camelcase */
 class CommentDetail {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    this.id = payload.id;
-    this.username = payload.username;
-    this.content = payload.content;
-    this.date = payload.date;
-    this.replies = payload.replies;
+    const {
+      id, username, content, date, replies, is_delete,
+    } = payload;
+
+    this.id = id;
+    this.username = username;
+    this.content = is_delete ? '**komentar telah dihapus**' : content;
+    this.date = date;
+    this.replies = replies;
   }
 
   _verifyPayload(payload) {

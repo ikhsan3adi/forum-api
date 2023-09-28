@@ -1,11 +1,16 @@
+/* eslint-disable camelcase */
 class ReplyDetail {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    this.id = payload.id;
-    this.username = payload.username;
-    this.content = payload.content;
-    this.date = payload.date;
+    const {
+      id, username, content, date, is_delete,
+    } = payload;
+
+    this.id = id;
+    this.username = username;
+    this.content = is_delete ? '**balasan telah dihapus**' : content;
+    this.date = date;
   }
 
   _verifyPayload(payload) {
