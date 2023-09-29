@@ -26,12 +26,9 @@ describe('AddReplyUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     /** mocking needed function */
-    mockThreadRepository.checkThreadAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.checkCommentAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.addReply = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockAddedReply));
+    mockThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
+    mockReplyRepository.addReply = jest.fn(() => Promise.resolve(mockAddedReply));
 
     /** creating use case instance */
     const addReplyUseCase = new AddReplyUseCase({
