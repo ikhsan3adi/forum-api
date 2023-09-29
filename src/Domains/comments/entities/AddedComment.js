@@ -2,9 +2,11 @@ class AddedComment {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    this.id = payload.id;
-    this.content = payload.content;
-    this.owner = payload.owner;
+    const { id, content, owner } = payload;
+
+    this.id = id;
+    this.content = content;
+    this.owner = owner;
   }
 
   _verifyPayload(payload) {

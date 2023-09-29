@@ -4,7 +4,7 @@ describe('ReplyDetail entities', () => {
   it('should throw error when payload not contain needed property', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'reply-123',
       username: 'foobar',
     };
 
@@ -15,7 +15,7 @@ describe('ReplyDetail entities', () => {
   it('should throw error when payload does not meet data type requirements', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'reply-123',
       username: 'foobar',
       content: 'a reply',
       date: 321,
@@ -28,7 +28,7 @@ describe('ReplyDetail entities', () => {
   it('should create ReplyDetail entities correctly', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'reply-123',
       username: 'foobar',
       content: 'a reply',
       date: '2023-09-22T07:19:09.775Z',

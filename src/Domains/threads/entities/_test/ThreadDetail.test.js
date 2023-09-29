@@ -4,6 +4,7 @@ describe('ThreadDetail entities', () => {
   it('should throw error when payload not contain needed property', () => {
     // Arrange
     const payload = {
+      id: 'thread-123',
       title: 'A thread',
       body: 'A long thread',
       comments: [],
@@ -16,7 +17,7 @@ describe('ThreadDetail entities', () => {
   it('should throw error when payload does not meet data type requirements', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'thread-123',
       title: 'A thread',
       body: 'A long thread',
       date: '2023-09-22T07:19:09.775Z',
@@ -31,7 +32,7 @@ describe('ThreadDetail entities', () => {
   it('should create ThreadDetail entities correctly', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'thread-123',
       title: 'A thread',
       body: 'A long thread',
       date: '2023-09-22T07:19:09.775Z',

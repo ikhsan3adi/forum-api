@@ -15,7 +15,7 @@ describe('CommentDetail entities', () => {
   it('should throw error when payload does not meet data type requirements', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'comment-123',
       username: 'foobar',
       content: 'a comment',
       replies: 'some replies',
@@ -29,7 +29,7 @@ describe('CommentDetail entities', () => {
   it('should create CommentDetail entities correctly', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 'comment-123',
       username: 'foobar',
       content: 'a comment',
       replies: [
