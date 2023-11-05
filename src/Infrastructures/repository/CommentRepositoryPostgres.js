@@ -10,10 +10,10 @@ class CommentRepositoryPostgres extends CommentRepository {
     this._idGenerator = idGenerator;
   }
 
-  async checkCommentAvailability(id) {
+  async checkCommentAvailability(commentId, threadId) {
     const query = {
-      text: 'SELECT id, is_delete FROM comments WHERE id = $1',
-      values: [id],
+      text: 'SELECT id, is_delete, thread FROM comments WHERE id = $1',
+      values: [commentId],
     };
 
     const result = await this._pool.query(query);
@@ -24,6 +24,10 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     if (result.rows[0].is_delete) {
       throw new NotFoundError('komentar tidak valid');
+    }
+
+    if (result.rows[0].thread !== threadId) {
+      throw new NotFoundError('komentar dalam thread tidak ditemukan');
     }
   }
 

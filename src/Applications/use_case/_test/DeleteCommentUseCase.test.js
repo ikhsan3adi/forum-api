@@ -35,6 +35,7 @@ describe('DeleteCommentUseCase', () => {
     );
     expect(mockCommentRepository.checkCommentAvailability).toHaveBeenCalledWith(
       useCaseParams.commentId,
+      useCaseParams.threadId,
     );
     expect(mockCommentRepository.verifyCommentOwner).toHaveBeenCalledWith(
       useCaseParams.commentId,

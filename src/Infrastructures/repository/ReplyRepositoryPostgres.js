@@ -10,10 +10,10 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     this._idGenerator = idGenerator;
   }
 
-  async checkReplyAvailability(id) {
+  async checkReplyAvailability(replyId, commentId) {
     const query = {
-      text: 'SELECT id, is_delete FROM replies WHERE id = $1',
-      values: [id],
+      text: 'SELECT id, is_delete, comment FROM replies WHERE id = $1',
+      values: [replyId],
     };
 
     const result = await this._pool.query(query);
@@ -24,6 +24,10 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     if (result.rows[0].is_delete) {
       throw new NotFoundError('balasan tidak valid');
+    }
+
+    if (result.rows[0].comment !== commentId) {
+      throw new NotFoundError('balasan dalam komentar tidak ditemukan');
     }
   }
 
