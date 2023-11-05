@@ -230,6 +230,32 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(responseJson.message).toEqual('komentar tidak valid');
     });
 
+    it('should response 404 if comment is not exist in thread', async () => {
+      // Arrange
+      const { accessToken, userId } = await serverTestHelper.getAccessTokenAndUserId();
+
+      // add thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, owner: userId });
+      // add comment
+      await CommentsTableTestHelper.addComment({ ...dummyComment, owner: userId });
+
+      // add other thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, id: 'other-thread', owner: userId });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/other-thread/comments/${dummyComment.id}`, // wrong thread
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('komentar dalam thread tidak ditemukan');
+    });
+
     it('should response 404 if thread is not exist', async () => {
       // Arrange
       const { accessToken } = await serverTestHelper.getAccessTokenAndUserId();

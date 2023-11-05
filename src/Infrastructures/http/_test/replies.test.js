@@ -40,7 +40,7 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
     id: 'comment-123',
     content: 'A comment',
     date: new Date().toISOString(),
-    thread: 'thread-123',
+    thread: dummyThread.id,
     isDelete: false,
   };
 
@@ -384,6 +384,62 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
       expect(response.statusCode).toEqual(404);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('thread tidak ditemukan');
+    });
+
+    it('should response 404 if replied comment is not exist in thread', async () => {
+      // Arrange
+      const { accessToken, userId } = await serverTestHelper.getAccessTokenAndUserId();
+
+      // add thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, owner: userId });
+      // add comment
+      await CommentsTableTestHelper.addComment({ ...dummyComment, owner: userId });
+      // add reply
+      await RepliesTableTestHelper.addReply({ ...dummyReply, owner: userId });
+
+      // add other thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, id: 'other-thread', owner: userId });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/other-thread/comments/${dummyComment.id}/replies/${dummyReply.id}`, // wrong thread
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('komentar dalam thread tidak ditemukan');
+    });
+
+    it('should response 404 if reply is not exist in comment', async () => {
+      // Arrange
+      const { accessToken, userId } = await serverTestHelper.getAccessTokenAndUserId();
+
+      // add thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, owner: userId });
+      // add comment
+      await CommentsTableTestHelper.addComment({ ...dummyComment, owner: userId });
+      // add reply
+      await RepliesTableTestHelper.addReply({ ...dummyReply, owner: userId });
+
+      // add other comment
+      await CommentsTableTestHelper.addComment({ ...dummyComment, id: 'other-comment', owner: userId });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${dummyThread.id}/comments/other-comment/replies/${dummyReply.id}`, // wrong comment
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('balasan dalam komentar tidak ditemukan');
     });
 
     it('should response 403 if reply owner is not authorized', async () => {
