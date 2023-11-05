@@ -25,8 +25,8 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.checkCommentAvailability('comment-123'))
-        .rejects.toThrowError(NotFoundError);
+      await expect(commentRepositoryPostgres.checkCommentAvailability('comment-123', 'thread-123'))
+        .rejects.toThrowError(new NotFoundError('komentar tidak ditemukan'));
     });
 
     it('should throw NotFoundError when comment is deleted', async () => {
@@ -47,8 +47,29 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.checkCommentAvailability('comment-123'))
-        .rejects.toThrowError(NotFoundError);
+      await expect(commentRepositoryPostgres.checkCommentAvailability(commentId, threadId))
+        .rejects.toThrowError(new NotFoundError('komentar tidak valid'));
+    });
+
+    it('should throw NotFoundError when comment is not found in thread', async () => {
+      // Arrange
+      const userId = 'user-123';
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+
+      await UsersTableTestHelper.addUser({ id: userId });
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+      await CommentsTableTestHelper.addComment({
+        id: commentId,
+        thread: threadId,
+        owner: userId,
+      });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(commentRepositoryPostgres.checkCommentAvailability('comment-123', 'other-thread'))
+        .rejects.toThrowError(new NotFoundError('komentar dalam thread tidak ditemukan'));
     });
 
     it('should not throw NotFoundError when comment available', async () => {
@@ -68,7 +89,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.checkCommentAvailability(commentId))
+      await expect(commentRepositoryPostgres.checkCommentAvailability(commentId, threadId))
         .resolves.not.toThrowError(NotFoundError);
     });
   });

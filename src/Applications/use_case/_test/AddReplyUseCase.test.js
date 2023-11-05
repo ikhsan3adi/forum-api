@@ -48,7 +48,10 @@ describe('AddReplyUseCase', () => {
     }));
 
     expect(mockThreadRepository.checkThreadAvailability).toBeCalledWith(useCaseParams.threadId);
-    expect(mockCommentRepository.checkCommentAvailability).toBeCalledWith(useCaseParams.commentId);
+    expect(mockCommentRepository.checkCommentAvailability).toBeCalledWith(
+      useCaseParams.commentId,
+      useCaseParams.threadId,
+    );
     expect(mockReplyRepository.addReply).toBeCalledWith(
       'user-123',
       useCaseParams.commentId,

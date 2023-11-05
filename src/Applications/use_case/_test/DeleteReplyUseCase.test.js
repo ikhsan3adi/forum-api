@@ -40,9 +40,11 @@ describe('DeleteReplyUseCase', () => {
     );
     expect(mockCommentRepository.checkCommentAvailability).toHaveBeenCalledWith(
       useCaseParams.commentId,
+      useCaseParams.threadId,
     );
     expect(mockReplyRepository.checkReplyAvailability).toHaveBeenCalledWith(
       useCaseParams.replyId,
+      useCaseParams.commentId,
     );
     expect(mockReplyRepository.verifyReplyOwner).toHaveBeenCalledWith(
       useCaseParams.replyId,

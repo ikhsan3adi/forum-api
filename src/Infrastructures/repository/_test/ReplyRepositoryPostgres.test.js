@@ -28,7 +28,7 @@ describe('ReplyRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(replyRepositoryPostgres.checkReplyAvailability('reply-123'))
-        .rejects.toThrowError(NotFoundError);
+        .rejects.toThrowError(new NotFoundError('balasan tidak ditemukan'));
     });
 
     it('should throw NotFoundError when reply is deleted', async () => {
@@ -55,8 +55,35 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.checkReplyAvailability('reply-123'))
-        .rejects.toThrowError(NotFoundError);
+      await expect(replyRepositoryPostgres.checkReplyAvailability('reply-123', commentId))
+        .rejects.toThrowError(new NotFoundError('balasan tidak valid'));
+    });
+
+    it('should throw NotFoundError when reply is npt found in comment', async () => {
+      // Arrange
+      const userId = 'user-123';
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+      const replyId = 'reply-123';
+
+      await UsersTableTestHelper.addUser({ id: userId });
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+      await CommentsTableTestHelper.addComment({
+        id: commentId,
+        thread: threadId,
+        owner: userId,
+      });
+      await RepliesTableTestHelper.addReply({
+        id: replyId,
+        comment: commentId,
+        owner: userId,
+      });
+
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.checkReplyAvailability('reply-123', 'other-comment'))
+        .rejects.toThrowError(new NotFoundError('balasan dalam komentar tidak ditemukan'));
     });
 
     it('should not throw NotFoundError when reply available', async () => {
@@ -82,7 +109,7 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.checkReplyAvailability(replyId))
+      await expect(replyRepositoryPostgres.checkReplyAvailability(replyId, commentId))
         .resolves.not.toThrowError(NotFoundError);
     });
   });
