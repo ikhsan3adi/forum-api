@@ -40,6 +40,7 @@ describe('GetThreadDetailUseCase', () => {
         username: 'johndoe',
         date: '2023-09-08T00:00:00.000Z',
         content: 'a reply',
+        comment: 'comment-1',
         is_delete: false,
       },
       {
@@ -47,7 +48,16 @@ describe('GetThreadDetailUseCase', () => {
         username: 'foobar',
         date: '2023-09-09T00:00:00.000Z',
         content: 'a deleted reply',
+        comment: 'comment-1',
         is_delete: true,
+      },
+      {
+        id: 'reply-3',
+        username: 'foobar',
+        date: '2023-09-09T00:00:00.000Z',
+        content: 'a reply',
+        comment: 'comment-2',
+        is_delete: false,
       },
     ];
 
@@ -59,7 +69,7 @@ describe('GetThreadDetailUseCase', () => {
     /** mocking needed function */
     mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(mockThreadDetail));
     mockCommentRepository.getCommentsByThreadId = jest.fn(() => Promise.resolve(mockComments));
-    mockreplyRepository.getRepliesByCommentId = jest.fn(() => Promise.resolve(mockReplies));
+    mockreplyRepository.getRepliesByThreadId = jest.fn(() => Promise.resolve(mockReplies));
 
     /** creating use case instance */
     const getThreadDetailUseCase = new GetThreadDetailUseCase({
@@ -110,7 +120,7 @@ describe('GetThreadDetailUseCase', () => {
     }));
     expect(mockThreadRepository.getThreadById).toBeCalledWith('thread-123');
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith('thread-123');
-    expect(mockreplyRepository.getRepliesByCommentId).toBeCalledTimes(1);
-    expect(mockreplyRepository.getRepliesByCommentId).toBeCalledWith('comment-1');
+    expect(mockreplyRepository.getRepliesByThreadId).toBeCalledTimes(1);
+    expect(mockreplyRepository.getRepliesByThreadId).toBeCalledWith('thread-123');
   });
 });
