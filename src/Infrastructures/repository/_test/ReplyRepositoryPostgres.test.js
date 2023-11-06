@@ -278,6 +278,74 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
+  describe('getRepliesByThreadId function', () => {
+    it('should return comment replies correctly', async () => {
+      // Arrange
+      const userId = 'user-123';
+      const otherUserId = 'user-456';
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+
+      await UsersTableTestHelper.addUser({ id: userId, username: 'foobar' });
+      await UsersTableTestHelper.addUser({ id: otherUserId, username: 'johndoe' });
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+      await CommentsTableTestHelper.addComment({
+        id: commentId,
+        content: 'A comment',
+        date: '2023-09-09',
+        thread: threadId,
+        owner: userId,
+      });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-2',
+        content: 'A comment',
+        date: '2023-09-09',
+        thread: threadId,
+        owner: userId,
+        isDelete: true,
+      });
+
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-new',
+        content: 'A new reply',
+        date: '2023-09-11',
+        comment: commentId,
+        owner: userId,
+      });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-old',
+        content: 'An old reply',
+        date: '2023-09-10',
+        comment: commentId,
+        owner: otherUserId,
+      });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-old-2',
+        content: 'An old reply',
+        date: '2023-09-09',
+        comment: 'comment-2',
+        owner: otherUserId,
+      });
+
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+
+      // Action
+      const replies = await replyRepositoryPostgres.getRepliesByThreadId(threadId);
+
+      // Assert
+      expect(replies).toHaveLength(2);
+      expect(replies[0].id).toBe('reply-old'); // older reply first
+      expect(replies[1].id).toBe('reply-new');
+      expect(replies[0].username).toBe('johndoe');
+      expect(replies[1].username).toBe('foobar');
+      expect(replies[0].content).toBe('An old reply');
+      expect(replies[1].content).toBe('A new reply');
+      expect(replies[0].date).toBeTruthy();
+      expect(replies[1].date).toBeTruthy();
+      expect(replies[2]).toBeUndefined(); // reply in deleted comment
+    });
+  });
+
   describe('deleteReplyById function', () => {
     it('should soft delete reply and update is_delete field', async () => {
       // Arrange
