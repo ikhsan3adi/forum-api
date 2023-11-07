@@ -20,6 +20,7 @@ describe('CommentDetail entities', () => {
       content: 'a comment',
       replies: 'some replies',
       date: 321,
+      likeCount: 0,
     };
 
     // Action & Assert
@@ -41,6 +42,7 @@ describe('CommentDetail entities', () => {
         },
       ],
       date: '2023-09-22T07:19:09.775Z',
+      likeCount: 0,
     };
 
     // Action
