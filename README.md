@@ -38,6 +38,10 @@
 
 `DELETE /threads/{threadId}/comments/{commentId}`
 
+- Menyukai atau batal menyukai Komentar pada Thread
+
+`PUT /threads/{threadId}/comments/{commentId}/likes`
+
 ### Thread Comment Replies
 
 - Menambahkan Balasan pada Komentar Thread
