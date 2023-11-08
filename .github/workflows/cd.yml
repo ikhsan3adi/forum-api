@@ -19,7 +19,7 @@
             port: ${{ secrets.SSH_PORT }}
             script: |
               cd ~/forum-api
-              git pull origin master
+              git pull origin main
               npm install
               npm run migrate up
               pm2 restart forum-api
