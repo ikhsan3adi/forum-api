@@ -7,7 +7,7 @@ const ServerTestHelper = require('../../../../tests/ServerTestHelper');
 const container = require('../../container');
 const createServer = require('../createServer');
 
-describe('/threads/{threadId}/comments endpoint', () => {
+describe('threads comments endpoint', () => {
   let server;
   let serverTestHelper;
 

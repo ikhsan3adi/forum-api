@@ -8,7 +8,7 @@ const ServerTestHelper = require('../../../../tests/ServerTestHelper');
 const container = require('../../container');
 const createServer = require('../createServer');
 
-describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
+describe('replies endpoint', () => {
   let server;
   let serverTestHelper;
 
@@ -44,7 +44,7 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
     isDelete: false,
   };
 
-  describe('when POST /threads/{threadId}/replies', () => {
+  describe('when POST /threads/{threadId}/comments/{commentId}/replies', () => {
     it('should response 201 and added reply', async () => {
       // Arrange
       const requestPayload = { content: 'A reply' };
@@ -122,6 +122,35 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('balasan harus berupa string');
+    });
+
+    it('should response 404 if replied comment is not exist in thread', async () => {
+      // Arrange
+      const requestPayload = { content: 'A reply' };
+
+      const { accessToken, userId } = await serverTestHelper.getAccessTokenAndUserId();
+
+      // add thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, owner: userId });
+      // add comment
+      await CommentsTableTestHelper.addComment({ ...dummyComment, owner: userId });
+
+      // add other thread
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, id: 'other-thread', owner: userId });
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: `/threads/other-thread/comments/${dummyComment.id}/replies`, // wrong thread
+        payload: requestPayload,
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('komentar dalam thread tidak ditemukan');
     });
 
     it('should response 404 if comment is not exist', async () => {

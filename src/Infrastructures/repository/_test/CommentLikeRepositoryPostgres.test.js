@@ -57,11 +57,11 @@ describe('CommentLikeRepositoryPostgres', () => {
       await commentLikeRepositoryPostgres.addLike(newLike);
 
       // Assert
-      const like = await CommentLikesTableTestHelper.findLikeByCommentIdAndUserId(
+      const likes = await CommentLikesTableTestHelper.findLikeByCommentIdAndUserId(
         dummyComment.id,
         dummyUserId,
       );
-      expect(like).toStrictEqual({
+      expect(likes[0]).toStrictEqual({
         id: 'like-123',
         comment: 'comment-123',
         owner: 'user-123',

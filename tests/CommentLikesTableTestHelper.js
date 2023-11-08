@@ -32,7 +32,7 @@ const CommentLikesTableTestHelper = {
     };
 
     const result = await pool.query(query);
-    return result.rows[0];
+    return result.rows;
   },
 
   async cleanTable() {
