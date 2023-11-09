@@ -32,7 +32,7 @@ class ThreadDetail {
       typeof id !== 'string'
       || typeof title !== 'string'
       || typeof body !== 'string'
-      || (typeof date !== 'string' && typeof date !== 'object')
+      || typeof date !== 'string'
       || typeof username !== 'string'
       || !Array.isArray(comments)
     ) {

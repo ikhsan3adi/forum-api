@@ -44,4 +44,25 @@ describe('ReplyDetail entities', () => {
     expect(replyDetail.content).toEqual(payload.content);
     expect(replyDetail.date).toEqual(payload.date);
   });
+
+  it('should create deleted ReplyDetail entities correctly', () => {
+    // Arrange
+    const payload = {
+      id: 'reply-123',
+      username: 'foobar',
+      content: 'a reply',
+      date: '2023-09-22T07:19:09.775Z',
+      is_delete: true,
+    };
+
+    // Action
+    const replyDetail = new ReplyDetail(payload);
+
+    // Assert
+    expect(replyDetail).toBeInstanceOf(ReplyDetail);
+    expect(replyDetail.id).toEqual(payload.id);
+    expect(replyDetail.username).toEqual(payload.username);
+    expect(replyDetail.content).toEqual('**balasan telah dihapus**');
+    expect(replyDetail.date).toEqual(payload.date);
+  });
 });
